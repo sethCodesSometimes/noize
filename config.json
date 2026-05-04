@@ -1,0 +1,27 @@
+{
+  "max_volume": 10,
+  "volume_step": 1,
+  "sources": [
+    {
+      "url": "https://www.youtube.com/watch?v=jfKfPfyJRdk",
+      "name": "Lofi Girl"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=2_ovWpVE9es",
+      "name": "River"
+    }
+  ],
+  "_examples": {
+    "_backup_streams": {
+      "url": [
+        "https://www.youtube.com/watch?v=first_stream",
+        "https://www.youtube.com/watch?v=backup_stream"
+      ],
+      "name": "Stream with backup"
+    },
+    "_local_file": {
+      "url": "/path/to/river.mp3",
+      "name": "River Sounds"
+    }
+  }
+}
