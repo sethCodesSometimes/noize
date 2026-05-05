@@ -150,6 +150,7 @@ class AudioMixer:
                 src['player'].volume = 0
             self._global_mute = True
         self._dirty = True
+        self.display(force=True)
 
     def scroll_up(self):
         if self.sources:
@@ -175,22 +176,23 @@ class AudioMixer:
             return
         self._dirty = False
         
-        output = "\033[2J\033[H" if force else "\033[H"  # Clear screen if forced
-        output += "=== noize ===\n"
+        # Clear screen and move to home
+        sys.stdout.write("[2J[H")
+        sys.stdout.write("=== noize ===\n")
         for i, src in enumerate(self.sources):
             marker = ">" if i == self.current_index else " "
-            vol = src['previous_volume'] if src.get('muted') else src['volume']
+            vol = src["previous_volume"] if src.get("muted") else src["volume"]
             bar = "#" * vol + "-" * (self.max_volume - vol)
-            mute_indicator = " [MUTED]" if src.get('muted') else ""
-            url_info = f" [{src['url_index']+1}/{len(src['urls'])}]" if len(src['urls']) > 1 else ""
-            output += f"{marker} {src['name'][:30]:30} [{bar}] {vol}/{self.max_volume}{mute_indicator}{url_info}\n"
-        output += "\nControls: j/k=scroll, h/l=volume down/up, m=mute/unmute, space=global mute, 0-9=set volume, q=quit\n"
+            mute_indicator = " [MUTED]" if src.get("muted") else ""
+            url_info = f" [{src["url_index"]+1}/{len(src["urls"])}]" if len(src["urls"]) > 1 else ""
+            line = f"{marker} {src["name"][:30]:30} [{bar}] {vol}/{self.max_volume}{mute_indicator}{url_info}"
+            sys.stdout.write(line + "\n")
+        sys.stdout.write("\nControls: j/k=scroll, h/l=volume down/up, m=mute/unmute, space=global mute, 0-9=set volume, q=quit\n")
         if self._global_mute:
-            output += "*** GLOBAL MUTE ACTIVE ***\n"
-        output += "\033[J"  # Clear from cursor to end
-        sys.stdout.write(output)
+            sys.stdout.write("*** GLOBAL MUTE ACTIVE ***\n")
         sys.stdout.flush()
         
+
     def run(self):
         import select
         import time
