@@ -76,24 +76,13 @@ class AudioMixer:
             'urls': urls,
             'url_index': 0,
             'muted': False,
-            'previous_volume': 0
+            'previous_volume': 0,
+            'is_local': is_local
         }
         
         self.sources.append(source_data)
         player.play(urls[0])
         player.volume = 0
-        
-        def try_next_url():
-            if source_data['url_index'] + 1 < len(urls):
-                source_data['url_index'] += 1
-                player.play(urls[source_data['url_index']])
-                return True
-            return False
-        
-        @player.event_callback('end-file')
-        def on_end_file(event):
-            if hasattr(event, 'reason') and event.reason in [2, 3, 4]:
-                try_next_url()
         
     def adjust_volume(self, delta):
         if not self.sources:
@@ -185,7 +174,12 @@ class AudioMixer:
             bar = "#" * vol + "-" * (self.max_volume - vol)
             mute_indicator = " [MUTED]" if src.get("muted") else ""
             url_info = f" [{src["url_index"]+1}/{len(src["urls"])}]" if len(src["urls"]) > 1 else ""
-            line = f"{marker} {src["name"][:30]:30} [{bar}] {vol}/{self.max_volume}{mute_indicator}{url_info}"
+            disconnected_indicator = ""
+            if src.get('_disconnected'):
+                disconnected_indicator = " [DISCONNECTED]"
+            elif src.get('_buffering'):
+                disconnected_indicator = " [BUFFERING...]"
+            line = f"{marker} {src["name"][:30]:30} [{bar}] {vol}/{self.max_volume}{mute_indicator}{url_info}{disconnected_indicator}"
             sys.stdout.write(line + "\n")
         sys.stdout.write("\nControls: j/k=scroll, h/l=volume down/up, m=mute/unmute, space=global mute, 0-9=set volume, q=quit\n")
         if self._global_mute:
@@ -193,14 +187,79 @@ class AudioMixer:
         sys.stdout.flush()
         
 
+    def try_next_url(self, src):
+        if src['url_index'] + 1 < len(src['urls']):
+            src['url_index'] += 1
+            src['player'].play(src['urls'][src['url_index']])
+            return True
+        return False
+
+    def check_connection_states(self):
+        for src in self.sources:
+            if src.get('is_local'):
+                if src.get('_disconnected'):
+                    src['_disconnected'] = False
+                    self._dirty = True
+                continue
+
+            player = src['player']
+            try:
+                idle = player.idle_active
+                paused_for_cache = player.paused_for_cache
+                core_idle = player.core_idle
+
+                if not src.get('_seen_playback'):
+                    if core_idle is False or (idle is False and paused_for_cache is not None):
+                        src['_seen_playback'] = True
+
+                if src.get('_seen_playback'):
+                    was_buffering = src.get('_buffering', False)
+                    was_disconnected = src.get('_disconnected', False)
+
+                    if paused_for_cache is True:
+                        src['_buffering'] = True
+                        src['_disconnected'] = False
+                        if not was_buffering:
+                            self._dirty = True
+                    elif idle is True:
+                        src['_buffering'] = False
+                        if not self.try_next_url(src):
+                            src['_disconnected'] = True
+                            if not was_disconnected:
+                                self._dirty = True
+                        else:
+                            src['_disconnected'] = False
+                    else:
+                        src['_buffering'] = False
+                        src['_disconnected'] = False
+                        if was_buffering or was_disconnected:
+                            self._dirty = True
+            except Exception as e:
+                pass
+
+    def retry_disconnected(self):
+        for src in self.sources:
+            if src.get('_disconnected') or src.get('_buffering'):
+                src['url_index'] = 0
+                src['player'].play(src['urls'][0])
+
     def run(self):
         import select
         import time
         buffer = ""
         last_digit_time = 0
         timeout = 0.3
+        last_retry_time = 0
+        retry_interval = 15.0
         self.display(force=True)
         while True:
+            now = time.time()
+            if now - last_retry_time > retry_interval:
+                self.retry_disconnected()
+                last_retry_time = now
+
+            self.check_connection_states()
+
             if buffer and (time.time() - last_digit_time > timeout):
                 num = int(buffer)
                 if num <= self.max_volume:
