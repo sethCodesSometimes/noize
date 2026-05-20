@@ -1,0 +1,10 @@
+/home/seth/projects/noize/target/debug/deps/rustc_serialize-7675f8d53e92711c.d: /home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/lib.rs /home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/serialize.rs /home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/collection_impls.rs /home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/base64.rs /home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/hex.rs /home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/json.rs
+
+/home/seth/projects/noize/target/debug/deps/librustc_serialize-7675f8d53e92711c.rmeta: /home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/lib.rs /home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/serialize.rs /home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/collection_impls.rs /home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/base64.rs /home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/hex.rs /home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/json.rs
+
+/home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/lib.rs:
+/home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/serialize.rs:
+/home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/collection_impls.rs:
+/home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/base64.rs:
+/home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/hex.rs:
+/home/seth/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-serialize-0.3.25/src/json.rs:

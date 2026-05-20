@@ -1,0 +1,1 @@
+/home/seth/projects/noize/target/debug/noize: /home/seth/projects/noize/src/config.rs /home/seth/projects/noize/src/main.rs /home/seth/projects/noize/src/mixer.rs /home/seth/projects/noize/src/state.rs /home/seth/projects/noize/src/tui.rs
