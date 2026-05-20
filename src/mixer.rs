@@ -97,10 +97,12 @@ impl Mixer {
 
         let index = self.sources.len();
         self.sources.push(source);
-        self.sources[index]
+        if let Err(e) = self.sources[index]
             .player
             .command(&["loadfile", &src.urls[0]])
-            .ok();
+        {
+            eprintln!("[noize] loadfile error for {}: {}", src.urls[0], e);
+        }
         self.sources[index]
             .player
             .set_property("volume", 0.0f64)
@@ -276,16 +278,16 @@ impl Mixer {
                 continue;
             }
 
-            let idle = src.player.get_property::<i64>("idle-active").ok();
+            let idle = src.player.get_property::<bool>("idle-active").ok();
             let paused_for_cache = src
                 .player
-                .get_property::<i64>("paused-for-cache")
+                .get_property::<bool>("paused-for-cache")
                 .ok();
-            let core_idle = src.player.get_property::<i64>("core-idle").ok();
+            let core_idle = src.player.get_property::<bool>("core-idle").ok();
 
             if !src.seen_playback
-                && (core_idle == Some(0)
-                    || (idle == Some(0) && paused_for_cache.is_some()))
+                && (core_idle == Some(false)
+                    || (idle == Some(false) && paused_for_cache.is_some()))
             {
                 src.seen_playback = true;
             }
@@ -295,14 +297,14 @@ impl Mixer {
                 let was_disconnected = src.disconnected;
 
                 match (paused_for_cache, idle) {
-                    (Some(1), _) => {
+                    (Some(true), _) => {
                         src.buffering = true;
                         src.disconnected = false;
                         if !was_buffering {
                             self.dirty = true;
                         }
                     }
-                    (_, Some(1)) => {
+                    (_, Some(true)) => {
                         src.buffering = false;
                         if !Self::try_next_url(src) {
                             src.disconnected = true;
