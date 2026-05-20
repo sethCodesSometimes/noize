@@ -32,6 +32,7 @@ fn main() -> anyhow::Result<()> {
     let digit_timeout = std::time::Duration::from_millis(300);
 
     tui::display(&mixer);
+    mixer.clear_dirty();
 
     loop {
         let now = std::time::Instant::now();

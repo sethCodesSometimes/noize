@@ -73,6 +73,9 @@ impl Mixer {
         builder
             .set_option("video", "no")
             .expect("failed to set video=no");
+        builder
+            .set_option("msg-level", "all=error")
+            .expect("failed to set msg-level");
         let player = builder.build().expect("failed to build mpv handler");
 
         let name = if src.name.is_empty() {

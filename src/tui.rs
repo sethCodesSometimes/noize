@@ -14,6 +14,7 @@ impl RawMode {
         let orig = termios::tcgetattr(fd.as_fd())?;
         let mut raw = orig.clone();
         termios::cfmakeraw(&mut raw);
+        raw.output_flags |= termios::OutputFlags::OPOST | termios::OutputFlags::ONLCR;
         termios::tcsetattr(fd.as_fd(), termios::SetArg::TCSANOW, &raw)?;
         Ok(RawMode { orig, fd })
     }
