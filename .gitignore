@@ -1,2 +1,5 @@
 target/
 state.json
+nohup.out
+__pycache__/
+.config/
